@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solitario 2048 - UCAB</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-between p-4 font-sans">
+
+    <header class="w-full max-w-md flex flex-col items-center gap-4 mb-6">
+        <h1 class="text-3xl font-extrabold text-amber-500 tracking-wider text-center">SOLITARIO 2048</h1>
+        
+        <div class="flex justify-between items-center w-full bg-slate-800 p-4 rounded-xl shadow-lg">
+            <div>
+                <span class="text-xs text-slate-400 block uppercase font-bold tracking-tight">Puntos</span>
+                <span id="score" class="text-2xl font-black text-white">0</span>
+            </div>
+            <button id="btn-restart" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2 px-4 rounded-lg transition-all shadow-md transform hover:scale-105">
+                Reiniciar
+            </button>
+        </div>
+    </header>
+
+    <section class="w-full max-w-md flex flex-col items-center gap-2 mb-6">
+        <h2 class="text-xs text-slate-400 uppercase font-bold tracking-wider">Siguiente Carta</h2>
+        <div id="deck-zone" class="w-24 h-32 bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex items-center justify-center shadow-inner relative">
+            <div id="next-card" class="hidden w-full h-full rounded-xl flex items-center justify-center text-2xl font-black shadow-md">
+                </div>
+        </div>
+    </section>
+
+    <main class="w-full max-w-md bg-slate-800 p-4 rounded-2xl shadow-2xl flex-grow flex flex-col justify-end">
+        <div class="grid grid-cols-4 gap-2 h-[450px] items-end">
+            
+            <div class="column-target bg-slate-700/40 hover:bg-slate-700/70 h-full rounded-xl flex flex-col justify-end p-1 gap-1 cursor-pointer transition-colors relative" data-col="0">
+                </div>
+
+            <div class="column-target bg-slate-700/40 hover:bg-slate-700/70 h-full rounded-xl flex flex-col justify-end p-1 gap-1 cursor-pointer transition-colors relative" data-col="1">
+                </div>
+
+            <div class="column-target bg-slate-700/40 hover:bg-slate-700/70 h-full rounded-xl flex flex-col justify-end p-1 gap-1 cursor-pointer transition-colors relative" data-col="2">
+                </div>
+
+            <div class="column-target bg-slate-700/40 hover:bg-slate-700/70 h-full rounded-xl flex flex-col justify-end p-1 gap-1 cursor-pointer transition-colors relative" data-col="3">
+                </div>
+
+        </div>
+    </main>
+
+    <footer class="mt-6 text-center text-xs text-slate-500">
+        <p>Programación Orientada a la Web | UCAB 2025-2</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
