@@ -60,18 +60,60 @@ function handleColumnClick(event) {
 
     // Verificar si la columna ya está llena
     if (targetColumn.length >= STATE.maxCards) {
-        alert("¡Esta columna está llena!"); // Más adelante cambiaremos esto por la condición de derrota
+        alert("¡Esta columna está llena!"); // Próximamente lo cambiaremos por el Game Over
         return;
     }
 
-    // Agregar la carta a la columna (cae a la posición más baja disponible o encima de la última) 
+    // 1. Agregar la carta a la columna
     targetColumn.push(STATE.currentCard);
     
-    // Aquí implementaremos el Sistema de Fusión más adelante...
+    // 2. Procesar las fusiones de manera recursiva
+    processMerges(colIndex);
 
-    // Renderizar los cambios y generar la siguiente carta
+    // 3. Renderizar los cambios, actualizar puntos y generar la siguiente carta
+    updateScore();
     renderColumns();
     generateNextCard();
+}
+
+// Sistema de Fusión Recursivo
+function processMerges(colIndex) {
+    const column = STATE.columns[colIndex];
+
+    // Condición base de recursividad: Necesitamos al menos 2 cartas para poder fusionar
+    if (column.length < 2) {
+        return; 
+    }
+
+    // Obtener las dos cartas superiores
+    const topCard = column[column.length - 1];
+    const cardBelow = column[column.length - 2];
+
+    // Si son iguales, ¡se fusionan!
+    if (topCard === cardBelow) {
+        const newValue = topCard * 2;
+        
+        // Sumar al marcador
+        STATE.score += newValue;
+
+        // Eliminar las dos cartas antiguas
+        column.pop();
+        column.pop();
+
+        // Efecto especial: ¿Llegó a 2048?
+        if (newValue === 2048) {
+            // Se limpia toda la columna
+            STATE.columns[colIndex] = [];
+            console.log("¡Columna limpiada al alcanzar 2048!");
+        } else {
+            // Si no es 2048, agregamos la nueva carta fusionada a la columna
+            column.push(newValue);
+            
+            // ¡RECURSIVIDAD! Volvemos a llamar a la función para ver si la nueva carta
+            // se puede fusionar con la que ahora quedó debajo de ella.
+            processMerges(colIndex);
+        }
+    }
 }
 
 // Dibujar las cartas en las columnas
