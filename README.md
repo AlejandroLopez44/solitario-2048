@@ -11,14 +11,14 @@ Este sistema es un juego web interactivo inspirado en las mecánicas de 2048 y e
 - **Efecto Especial 2048:** Al alcanzar una carta de valor 2048, la columna completa se limpia para otorgar espacio adicional[cite: 35].
 - **Condición de Derrota:** Si alguna columna excede el límite estricto de 8 cartas tras procesar las fusiones, se declara el fin del juego mediante una interfaz modal interactiva[cite: 33, 34].
 
-## 🛠️ Tecnologías Utilizadas
+## Tecnologías Utilizadas
 De acuerdo con las restricciones de la actividad[cite: 43]:
 - **HTML5:** Estructuración del DOM, contenedores de juego y modales de estado.
 - **Tailwind CSS (v4 mediante CDN):** Utilizada como la **única librería de estilos** del proyecto para gestionar el diseño responsivo, centrado de textos y paletas dinámicas de color para cada valor de carta[cite: 16, 45, 48].
 - **JavaScript Puro (Vanilla JS):** Control absoluto de la lógica de negocio del cliente, manipulación del DOM, temporizadores y algoritmos de recursividad[cite: 44, 50, 52].
 *Nota: El sistema opera 100% del lado del cliente empleando datos simulados y estáticos, sin interactuar con servidores ni bases de datos[cite: 52, 53].*
 
-## 🤖 Declaración de Uso de Inteligencia Artificial Generativa
+## Declaración de Uso de Inteligencia Artificial Generativa
 En cumplimiento con las directrices de la evaluación, se declara el uso asistido de la IA generativa (Gemini de Google) bajo los siguientes parámetros:
 
 ### ¿Para qué se utilizó?
