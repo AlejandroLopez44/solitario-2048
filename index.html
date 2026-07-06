@@ -52,6 +52,23 @@
         <p>Programación Orientada a la Web | UCAB 2025-2</p>
     </footer>
 
+    <div id="game-over-modal" class="hidden fixed inset-0 bg-slate-950/80 flex flex-col items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div class="bg-slate-800 border border-red-500/20 p-8 rounded-2xl max-w-sm w-full text-center shadow-2xl animate-fade-in">
+            <h2 class="text-4xl font-black text-red-500 mb-2 tracking-wide">GAME OVER</h2>
+            <p class="text-slate-400 text-sm mb-6">Una columna excedió el límite de 8 cartas sin poder fusionarse más.</p>
+            
+            <div class="bg-slate-900/60 p-4 rounded-xl mb-6 border border-slate-700">
+                <span class="text-xs text-slate-500 uppercase font-bold block tracking-wider">Puntuación Final</span>
+                <span id="final-score" class="text-4xl font-black text-amber-500">0</span>
+            </div>
+            
+            <button id="btn-restart-modal" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-lg transform hover:scale-105 cursor-pointer">
+                Intentar de nuevo
+            </button>
+        </div>
+    </div>
+
     <script src="app.js"></script>
+</body>
 </body>
 </html>

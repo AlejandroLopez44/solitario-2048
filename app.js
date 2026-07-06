@@ -3,10 +3,11 @@ const STATE = {
     score: 0,
     currentCard: null,
     columns: [[], [], [], []], // 4 columnas, el índice 0 es la base
-    maxCards: 8 // Límite máximo de cartas por columna [cite: 34]
+    maxCards: 8, // Límite máximo de cartas permitido por columna
+    gameOver: false
 };
 
-// Valores iniciales posibles para el mazo 
+// Valores iniciales posibles para el mazo
 const INITIAL_VALUES = [2, 4, 8, 16, 32];
 
 // Diccionario de colores para las cartas usando clases de Tailwind
@@ -30,12 +31,22 @@ const nextCardEl = document.getElementById('next-card');
 const columnsEl = document.querySelectorAll('.column-target');
 const btnRestart = document.getElementById('btn-restart');
 
+// Nuevas referencias para el Game Over
+const gameOverModal = document.getElementById('game-over-modal');
+const finalScoreEl = document.getElementById('final-score');
+const btnRestartModal = document.getElementById('btn-restart-modal');
+
 // --- 3. LÓGICA PRINCIPAL ---
 
 // Función para inicializar o reiniciar el juego
 function initGame() {
     STATE.score = 0;
     STATE.columns = [[], [], [], []];
+    STATE.gameOver = false;
+    
+    // Ocultar modal de Game Over si estuviera visible
+    gameOverModal.classList.add('hidden');
+    
     updateScore();
     generateNextCard();
     renderColumns();
@@ -43,10 +54,11 @@ function initGame() {
 
 // Generar una nueva carta aleatoria en el mazo
 function generateNextCard() {
+    if (STATE.gameOver) return;
+
     const randomIndex = Math.floor(Math.random() * INITIAL_VALUES.length);
     STATE.currentCard = INITIAL_VALUES[randomIndex];
     
-    // Actualizar visualmente la carta del mazo
     nextCardEl.className = `w-full h-full rounded-xl flex items-center justify-center text-3xl font-black shadow-md transition-all ${CARD_COLORS[STATE.currentCard] || 'bg-gray-900 text-white'}`;
     nextCardEl.textContent = STATE.currentCard;
     nextCardEl.classList.remove('hidden');
@@ -54,23 +66,27 @@ function generateNextCard() {
 
 // Manejar el clic en una columna
 function handleColumnClick(event) {
-    // Identificar qué columna fue clickeada
+    // Si el juego terminó, bloquear interacciones
+    if (STATE.gameOver) return;
+
     const colIndex = parseInt(event.currentTarget.getAttribute('data-col'));
     const targetColumn = STATE.columns[colIndex];
 
-    // Verificar si la columna ya está llena
-    if (targetColumn.length >= STATE.maxCards) {
-        alert("¡Esta columna está llena!"); // Próximamente lo cambiaremos por el Game Over
+    // IMPORTANTE: Permitimos poner la carta temporalmente (ej. la carta número 9)
+    // para ver si gracias a la recursividad logra combinarse y bajar el tamaño de la columna.
+    targetColumn.push(STATE.currentCard);
+    
+    // Procesar las fusiones de manera recursiva
+    processMerges(colIndex);
+
+    // EVALUACIÓN DE DERROTA: Si después de todas las fusiones posibles, 
+    // la columna sigue superando las 8 cartas, el jugador pierde.
+    if (targetColumn.length > STATE.maxCards) {
+        triggerGameOver();
         return;
     }
 
-    // 1. Agregar la carta a la columna
-    targetColumn.push(STATE.currentCard);
-    
-    // 2. Procesar las fusiones de manera recursiva
-    processMerges(colIndex);
-
-    // 3. Renderizar los cambios, actualizar puntos y generar la siguiente carta
+    // Si no perdió, continuar el juego normalmente
     updateScore();
     renderColumns();
     generateNextCard();
@@ -80,51 +96,41 @@ function handleColumnClick(event) {
 function processMerges(colIndex) {
     const column = STATE.columns[colIndex];
 
-    // Condición base de recursividad: Necesitamos al menos 2 cartas para poder fusionar
-    if (column.length < 2) {
-        return; 
-    }
+    if (column.length < 2) return; 
 
-    // Obtener las dos cartas superiores
     const topCard = column[column.length - 1];
     const cardBelow = column[column.length - 2];
 
-    // Si son iguales, ¡se fusionan!
     if (topCard === cardBelow) {
         const newValue = topCard * 2;
-        
-        // Sumar al marcador
         STATE.score += newValue;
 
-        // Eliminar las dos cartas antiguas
         column.pop();
         column.pop();
 
-        // Efecto especial: ¿Llegó a 2048?
         if (newValue === 2048) {
-            // Se limpia toda la columna
             STATE.columns[colIndex] = [];
             console.log("¡Columna limpiada al alcanzar 2048!");
         } else {
-            // Si no es 2048, agregamos la nueva carta fusionada a la columna
             column.push(newValue);
-            
-            // ¡RECURSIVIDAD! Volvemos a llamar a la función para ver si la nueva carta
-            // se puede fusionar con la que ahora quedó debajo de ella.
-            processMerges(colIndex);
+            processMerges(colIndex); // Llamada recursiva
         }
     }
+}
+
+// Activar la pantalla de derrota
+function triggerGameOver() {
+    STATE.gameOver = true;
+    finalScoreEl.textContent = STATE.score;
+    gameOverModal.classList.remove('hidden'); // Mostrar el modal quitando la clase 'hidden'
 }
 
 // Dibujar las cartas en las columnas
 function renderColumns() {
     columnsEl.forEach((colEl, index) => {
-        // Limpiar la columna visualmente
         colEl.innerHTML = '';
         const colData = STATE.columns[index];
 
-        // Iterar sobre los datos de la columna para crear las cartas visuales
-        // Se renderizan de abajo hacia arriba gracias al flex-col justify-end
         colData.forEach((cardValue) => {
             const cardEl = document.createElement('div');
             cardEl.className = `w-full h-14 rounded-lg flex items-center justify-center text-xl font-bold shadow-sm transition-all ${CARD_COLORS[cardValue] || 'bg-gray-900 text-white'}`;
@@ -145,6 +151,7 @@ columnsEl.forEach(col => {
 });
 
 btnRestart.addEventListener('click', initGame);
+btnRestartModal.addEventListener('click', initGame); // Evento para el botón del modal
 
 // Iniciar el juego por primera vez al cargar el script
 initGame();
