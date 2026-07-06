@@ -2,6 +2,7 @@
 const STATE = {
     score: 0,
     currentCard: null,
+    nextCard: null, // Guarda la carta en previsión (Mecánica Tetris)
     columns: [[], [], [], []], // 4 columnas, el índice 0 es la base
     maxCards: 8, // Límite máximo de cartas permitido por columna
     gameOver: false
@@ -27,11 +28,12 @@ const CARD_COLORS = {
 
 // --- 2. REFERENCIAS AL DOM ---
 const scoreEl = document.getElementById('score');
-const nextCardEl = document.getElementById('next-card');
+const currentCardEl = document.getElementById('current-card');
+const nextPreviewCardEl = document.getElementById('next-preview-card');
 const columnsEl = document.querySelectorAll('.column-target');
 const btnRestart = document.getElementById('btn-restart');
 
-// Nuevas referencias para el Game Over
+// Referencias para el Game Over
 const gameOverModal = document.getElementById('game-over-modal');
 const finalScoreEl = document.getElementById('final-score');
 const btnRestartModal = document.getElementById('btn-restart-modal');
@@ -44,52 +46,64 @@ function initGame() {
     STATE.columns = [[], [], [], []];
     STATE.gameOver = false;
     
-    // Ocultar modal de Game Over si estuviera visible
     gameOverModal.classList.add('hidden');
     
     updateScore();
-    generateNextCard();
+    
+    // Generamos las dos primeras cartas del mazo por separado
+    STATE.currentCard = getRandomCardValue();
+    STATE.nextCard = getRandomCardValue();
+    
+    updateDeckUI();
     renderColumns();
 }
 
-// Generar una nueva carta aleatoria en el mazo
-function generateNextCard() {
+// Obtener un valor de carta aleatorio
+function getRandomCardValue() {
+    const randomIndex = Math.floor(Math.random() * INITIAL_VALUES.length);
+    return INITIAL_VALUES[randomIndex];
+}
+
+// Actualizar visualmente ambos espacios del mazo (Mano y Previsión)
+function updateDeckUI() {
     if (STATE.gameOver) return;
 
-    const randomIndex = Math.floor(Math.random() * INITIAL_VALUES.length);
-    STATE.currentCard = INITIAL_VALUES[randomIndex];
-    
-    nextCardEl.className = `w-full h-full rounded-xl flex items-center justify-center text-3xl font-black shadow-md transition-all ${CARD_COLORS[STATE.currentCard] || 'bg-gray-900 text-white'}`;
-    nextCardEl.textContent = STATE.currentCard;
-    nextCardEl.classList.remove('hidden');
+    // 1. Renderizar la carta en mano (actual)
+    currentCardEl.className = `w-full h-full rounded-xl flex items-center justify-center text-3xl font-black shadow-md transition-all ${CARD_COLORS[STATE.currentCard] || 'bg-gray-900 text-white'}`;
+    currentCardEl.textContent = STATE.currentCard;
+
+    // 2. Renderizar la siguiente carta (vista previa)
+    nextPreviewCardEl.className = `w-full h-full rounded-xl flex items-center justify-center text-2xl font-black shadow-md transition-all ${CARD_COLORS[STATE.nextCard] || 'bg-gray-900 text-white'}`;
+    nextPreviewCardEl.textContent = STATE.nextCard;
 }
 
 // Manejar el clic en una columna
 function handleColumnClick(event) {
-    // Si el juego terminó, bloquear interacciones
     if (STATE.gameOver) return;
 
     const colIndex = parseInt(event.currentTarget.getAttribute('data-col'));
     const targetColumn = STATE.columns[colIndex];
 
-    // IMPORTANTE: Permitimos poner la carta temporalmente (ej. la carta número 9)
-    // para ver si gracias a la recursividad logra combinarse y bajar el tamaño de la columna.
+    // Colocar la carta que tenemos actualmente en mano
     targetColumn.push(STATE.currentCard);
     
     // Procesar las fusiones de manera recursiva
     processMerges(colIndex);
 
-    // EVALUACIÓN DE DERROTA: Si después de todas las fusiones posibles, 
-    // la columna sigue superando las 8 cartas, el jugador pierde.
+    // Evaluación de derrota
     if (targetColumn.length > STATE.maxCards) {
         triggerGameOver();
         return;
     }
 
-    // Si no perdió, continuar el juego normalmente
+    // ROTACIÓN DE CARTAS: La que estaba en "Siguiente" pasa a "Mano"
+    STATE.currentCard = STATE.nextCard;
+    // Generamos una nueva carta aleatoria para la posición "Siguiente"
+    STATE.nextCard = getRandomCardValue();
+
     updateScore();
     renderColumns();
-    generateNextCard();
+    updateDeckUI();
 }
 
 // Sistema de Fusión Recursivo
@@ -113,7 +127,7 @@ function processMerges(colIndex) {
             console.log("¡Columna limpiada al alcanzar 2048!");
         } else {
             column.push(newValue);
-            processMerges(colIndex); // Llamada recursiva
+            processMerges(colIndex);
         }
     }
 }
@@ -122,7 +136,7 @@ function processMerges(colIndex) {
 function triggerGameOver() {
     STATE.gameOver = true;
     finalScoreEl.textContent = STATE.score;
-    gameOverModal.classList.remove('hidden'); // Mostrar el modal quitando la clase 'hidden'
+    gameOverModal.classList.remove('hidden');
 }
 
 // Dibujar las cartas en las columnas
@@ -151,7 +165,7 @@ columnsEl.forEach(col => {
 });
 
 btnRestart.addEventListener('click', initGame);
-btnRestartModal.addEventListener('click', initGame); // Evento para el botón del modal
+btnRestartModal.addEventListener('click', initGame);
 
 // Iniciar el juego por primera vez al cargar el script
 initGame();

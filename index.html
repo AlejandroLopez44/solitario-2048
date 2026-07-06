@@ -22,11 +22,21 @@
         </div>
     </header>
 
-    <section class="w-full max-w-md flex flex-col items-center gap-2 mb-6">
-        <h2 class="text-xs text-slate-400 uppercase font-bold tracking-wider">Siguiente Carta</h2>
-        <div id="deck-zone" class="w-24 h-32 bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex items-center justify-center shadow-inner relative">
-            <div id="next-card" class="hidden w-full h-full rounded-xl flex items-center justify-center text-2xl font-black shadow-md">
-                </div>
+    <section class="w-full max-w-md flex justify-center gap-8 mb-6">
+        <div class="flex flex-col items-center gap-2">
+            <h2 class="text-xs text-slate-400 uppercase font-bold tracking-wider">Carta en Mano</h2>
+            <div class="w-24 h-32 bg-slate-800 rounded-xl border-2 border-slate-600 flex items-center justify-center shadow-xl relative">
+                <div id="current-card" class="w-full h-full rounded-xl flex items-center justify-center text-3xl font-black shadow-md transition-all">
+                    </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col items-center gap-2 opacity-60">
+            <h2 class="text-xs text-slate-500 uppercase font-bold tracking-wider">Siguiente</h2>
+            <div class="w-20 h-26 bg-slate-800 rounded-xl border-2 border-dashed border-slate-600 flex items-center justify-center shadow-inner relative">
+                <div id="next-preview-card" class="w-full h-full rounded-xl flex items-center justify-center text-2xl font-black shadow-md transition-all">
+                    </div>
+            </div>
         </div>
     </section>
 
